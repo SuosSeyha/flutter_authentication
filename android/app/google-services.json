@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "365849309610",
+    "project_id": "flutter-learing-11-12",
+    "storage_bucket": "flutter-learing-11-12.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:365849309610:android:f658456abbfc66c5783bd3",
+        "android_client_info": {
+          "package_name": "com.example.flutter_firebase_11_12"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBMsP-uYviPsU0KULukEPllanakbKSh4j0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
