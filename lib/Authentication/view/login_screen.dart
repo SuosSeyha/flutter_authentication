@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_firebase_11_12/Authentication/helper/function_help.dart';
 import 'package:flutter_firebase_11_12/Authentication/service/auth_service.dart';
 import 'package:flutter_firebase_11_12/Authentication/view/home_page.dart';
 import 'package:flutter_firebase_11_12/Authentication/view/register_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
 class LoginScreen extends StatefulWidget {
-  LoginScreen({super.key});
+  const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -18,6 +19,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool isPassword=true;
   bool isLoginState=false;
   AuthService authService = AuthService();
+  FunctionHelper functionHelper = FunctionHelper();
   void clear(){
     emailController.clear();
     passwordController.clear();
@@ -29,7 +31,8 @@ class _LoginScreenState extends State<LoginScreen> {
       });
       await authService.loginAcccount(email: email, password: password).then((value){
         if(value==true){
-          Get.to(const HomePage());
+          Get.off( HomePage());
+          functionHelper.setUserState(true);
           clear();
         }
       });
@@ -75,7 +78,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     decoration:  InputDecoration(
                       label: const Text('Email'),
                       prefixIcon: const Icon(Icons.email),
-                      
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(
                           20
@@ -138,8 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       }
                       return null;
                   },
-                  ),
-                  
+                  ), 
                   const SizedBox(
                     height: 20,
                   ),
