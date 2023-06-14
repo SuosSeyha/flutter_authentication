@@ -1,6 +1,6 @@
 class Student{
   final String name,gender;
-  final double score;
+  final int score;
 
   Student({
     required this.name,

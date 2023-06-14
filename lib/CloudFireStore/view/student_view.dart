@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_firebase_11_12/CloudFireStore/model/student_model.dart';
 import 'package:flutter_firebase_11_12/CloudFireStore/service/student_serive.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 class StudentView extends StatefulWidget {
   const StudentView({super.key});
@@ -16,7 +17,19 @@ class _StudentViewState extends State<StudentView> {
   final scoreController = TextEditingController();
   StudentService studentService = StudentService();
   final CollectionReference _tbstudent = FirebaseFirestore.instance.collection('tbstudent');
-  Future<void> showForm()async{
+  void clear(){
+    nameController.clear();
+    genderController.clear();
+    scoreController.clear();
+  }
+  Future<void> showForm(Student? student,DocumentSnapshot? documentSnapshot)async{
+    // check
+    if(student !=null || documentSnapshot !=null){
+      nameController.text = student!.name;
+      genderController.text=student.gender;
+      scoreController.text=student.score.toString();
+    }
+
     Get.defaultDialog(
       title: 'Enter Student Information',
       content: Container(
@@ -54,6 +67,7 @@ class _StudentViewState extends State<StudentView> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextField(
+               // keyboardType: TextInputType.number,
                 controller: scoreController,
                 decoration: InputDecoration(
                   label: const Text('Score'),
@@ -68,21 +82,34 @@ class _StudentViewState extends State<StudentView> {
           ],
         )
       ),
+      barrierDismissible: false,
       onConfirm: () {  
-        studentService.createStudent(
+        if(student==null){
+          studentService.createStudent(
           Student(
             name: nameController.text, 
             gender: genderController.text, 
-            score: double.parse(scoreController.text)
+            score: int.parse(scoreController.text)
           )
         );  
+        }else{
+          studentService.updateStudent(
+            Student(
+              name: nameController.text, 
+              gender: genderController.text, 
+              score: int.parse(scoreController.text)
+            ), 
+            documentSnapshot!
+            );
+        }
+        clear();
         Get.back();
       },
-      textConfirm: 'Create',
+      textConfirm: student !=null ? 'Update': 'Create',
       confirmTextColor: Colors.white,
       buttonColor: Colors.pink,
       onCancel: () {
-        
+        clear();
       },
       cancelTextColor: Colors.black
     );
@@ -118,11 +145,66 @@ class _StudentViewState extends State<StudentView> {
             itemCount: snapshot.data!.docs.length,
           itemBuilder: (context, index) {
              DocumentSnapshot documentSnapshot = snapshot.data!.docs[index];
-            return  Card(
-              child: ListTile(
-                title: Text(documentSnapshot['name']),
-                subtitle: Text(documentSnapshot['score'].toString()),
-                trailing: Text(documentSnapshot['gender']),
+            return  Slidable(
+                endActionPane:  ActionPane(
+                  motion: DrawerMotion(), 
+                  children: [
+                    SlidableAction(
+                      autoClose: true,
+                      borderRadius: BorderRadius.circular(20),
+                      foregroundColor: Colors.blue,
+                      //backgroundColor: Colors.yellow,
+                      label: 'Edit',
+                      icon: Icons.edit,
+                      onPressed: (context) {
+                        
+                        showForm(
+                          Student(
+                          name: documentSnapshot['name'],
+                           gender: documentSnapshot['gender'],
+                            score: documentSnapshot['score']
+                          ), 
+                          documentSnapshot
+                          );
+                      },
+                    ),
+                    SlidableAction(
+                      autoClose: true,
+                      foregroundColor: Colors.red,
+                      label: 'Delete',
+                      icon: Icons.delete,
+                      onPressed: (context) {
+                        studentService.deleteStudent(documentSnapshot);
+                      },
+                    )
+                  ]
+                ),
+                child: Card(
+                child: ListTile(
+                  tileColor: Colors.blueGrey,
+                  title: Text(
+                    documentSnapshot['name'],
+                    style: const TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white
+                    ),
+                    ),
+                  subtitle: Text(
+                    documentSnapshot['score'].toString(),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    ),
+                  trailing: Text(
+                    documentSnapshot['gender'],
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,  
+                    ),
+                    ),
+                ),
               ),
             );
           },
@@ -131,9 +213,7 @@ class _StudentViewState extends State<StudentView> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          showForm(
-           
-          );
+          showForm(null,null);
         },
         child: const Icon(
           Icons.add
