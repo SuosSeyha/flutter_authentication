@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'Authentication/view/login_screen.dart';
 import 'Authentication/view/register_screen.dart';
 import 'CloudFireStore/view/student_view.dart';
+import 'FirebaseStorage/home_storage.dart';
 Future<void> main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -40,7 +41,7 @@ class _MyAppState extends State<MyApp> {
       ), 
       debugShowCheckedModeBanner: false,
       //home:  userState? HomePage():const LoginScreen(),
-      home: const StudentView()
+      home: const HomeStorage()
     );
   }
 }
