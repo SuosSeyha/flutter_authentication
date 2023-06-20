@@ -23,7 +23,7 @@ class _HomeStorageState extends State<HomeStorage> {
     setState(() async{
       await downloadImage();
     });
-    return Future.delayed(const Duration(seconds: 1));
+    return Future.delayed(const Duration(seconds: 2));
   }
   // Compress image
   Future<File> compressImage(File file)async{
@@ -114,6 +114,7 @@ class _HomeStorageState extends State<HomeStorage> {
         child: CircularProgressIndicator(),
       ) : LiquidPullToRefresh(
         animSpeedFactor: 20,
+        //backgroundColor: Colors.red,
         onRefresh: refreshImage,
         child: FutureBuilder(
           future: downloadImage(),
@@ -132,24 +133,47 @@ class _HomeStorageState extends State<HomeStorage> {
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
                 final Map image = snapshot.data![index];
-                return Container(
-                  margin: const EdgeInsets.only(
-                    top: 10,
-                    right: 10,
-                    left: 10
-                  ),
-                  height: height/2 *0.6,
-                  width: width,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: Colors.red,
-                    image: DecorationImage(
-                      fit: BoxFit.fill,
-                      image: NetworkImage(
-                        image['url']
-                      )
+                return Stack(
+                  alignment: Alignment.topRight,
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.only(
+                        top: 10,
+                        right: 10,
+                        left: 10
+                      ),
+                      height: height/2 *0.6,
+                      width: width,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: Colors.red,
+                        image: DecorationImage(
+                          fit: BoxFit.fill,
+                          image: NetworkImage(
+                            image['url']
+                          )
+                        )
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        top: 5,
+                        right: 10
+                      ),
+                      child: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            deleteImage(image['path']);
+                          });
+                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Delete image successful')));
+                        }, 
+                        icon: const Icon(
+                          Icons.delete,
+                          color: Colors.red,
+                          size: 30,
+                        )),
                     )
-                  ),
+                  ],
                 );
               },
             );
